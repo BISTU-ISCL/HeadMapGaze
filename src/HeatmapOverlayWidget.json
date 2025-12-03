@@ -1,0 +1,7 @@
+{
+    "Keys": ["HeatmapOverlayWidget"],
+    "Icon": "",
+    "Group": "Visualization",
+    "ToolTip": "眼动热图叠加控件",
+    "WhatsThis": "支持将眼动轨迹转换为热图叠加在任意图片之上的可视化控件。"
+}
