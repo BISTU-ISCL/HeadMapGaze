@@ -75,11 +75,12 @@ int main(int argc, char *argv[])
   如未提供有效图片路径，程序会自动生成一张灰色背景图以便快速体验热图效果。
 
 ## 作为 Qt 控件库 / Designer 插件使用
-- 插件实现：`src/HeatmapOverlayWidgetPlugin.h/.cpp/.json`，可编译为 `designer` 插件放入 Qt 控件库。
+- 插件实现：`src/HeatmapOverlayWidgetPlugin.h/.cpp/.json`，可编译为 `designer` 插件放入 Qt 控件库（已按 Qt 5.15.2 兼容性仅导出集合插件元数据，避免多重元数据导致 Designer 不加载）。
 - qmake 插件示例（将源码与头文件加入 `HEADERS/SOURCES`）：
   ```pro
   TEMPLATE = lib
   CONFIG += designer plugin
+  QT += widgets gui designer
   TARGET = heatmapoverlaywidgetplugin
   HEADERS += src/HeatmapOverlayWidget.h \
              src/HeatmapOverlayWidgetPlugin.h
@@ -87,4 +88,5 @@ int main(int argc, char *argv[])
              src/HeatmapOverlayWidgetPlugin.cpp
   DISTFILES += src/HeatmapOverlayWidget.json
   ```
+- Qt 5.15.2 及更早版本的 Designer 对集合插件识别更稳定，代码内已包含 `HeatmapOverlayWidgetCollectionPlugin` 包装；按上方方式编译即可生成对应动态库。
 - 编译后复制生成的 `libheatmapoverlaywidgetplugin.so`（或对应平台扩展名）到 Qt 的 `plugins/designer/` 目录，重启 Qt Designer 后即可在“Visualization”分组找到并拖拽该控件。

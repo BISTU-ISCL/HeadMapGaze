@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
+#include <QtUiPlugin/QDesignerCustomWidgetCollectionInterface>
 
 class QDesignerFormEditorInterface;
 
@@ -10,7 +11,6 @@ class HeatmapOverlayWidgetPlugin : public QObject, public QDesignerCustomWidgetI
 {
     Q_OBJECT
     Q_INTERFACES(QDesignerCustomWidgetInterface)
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QDesignerCustomWidgetInterface" FILE "HeatmapOverlayWidget.json")
 
 public:
     explicit HeatmapOverlayWidgetPlugin(QObject *parent = nullptr);
@@ -30,6 +30,21 @@ public:
 
 private:
     bool m_initialized = false;
+};
+
+// Qt5 下 Designer 更常见的集合插件包装，保证在 5.15 版本中被识别
+class HeatmapOverlayWidgetCollectionPlugin : public QObject, public QDesignerCustomWidgetCollectionInterface
+{
+    Q_OBJECT
+    Q_INTERFACES(QDesignerCustomWidgetCollectionInterface)
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QDesignerCustomWidgetCollectionInterface")
+
+public:
+    explicit HeatmapOverlayWidgetCollectionPlugin(QObject *parent = nullptr);
+    QList<QDesignerCustomWidgetInterface *> customWidgets() const override;
+
+private:
+    QList<QDesignerCustomWidgetInterface *> m_plugins;
 };
 
 #endif // HEATMAPOVERLAYWIDGETPLUGIN_H

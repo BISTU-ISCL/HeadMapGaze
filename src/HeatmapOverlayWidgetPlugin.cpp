@@ -5,6 +5,8 @@
 #include <QIcon>
 #include <QtUiPlugin/QDesignerFormEditorInterface>
 
+// 注意：为兼容 Qt 5.15.2 Designer，只在集合插件类上导出 Q_PLUGIN_METADATA，
+// 单个控件插件类不再重复导出元数据，避免出现“多重元数据”导致的识别失败。
 HeatmapOverlayWidgetPlugin::HeatmapOverlayWidgetPlugin(QObject *parent)
     : QObject(parent)
 {
@@ -83,7 +85,20 @@ QString HeatmapOverlayWidgetPlugin::domXml() const
     );
 }
 
-// 必须导出插件元数据
+HeatmapOverlayWidgetCollectionPlugin::HeatmapOverlayWidgetCollectionPlugin(QObject *parent)
+    : QObject(parent)
+{
+    // Designer 5.15.x 在某些平台上更偏好集合插件，提前创建包裹以确保识别
+    m_plugins.append(new HeatmapOverlayWidgetPlugin(this));
+}
+
+QList<QDesignerCustomWidgetInterface *> HeatmapOverlayWidgetCollectionPlugin::customWidgets() const
+{
+    return m_plugins;
+}
+
+// 必须导出插件元数据（Qt5 仍支持该宏，Qt6 起不再需要）
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(HeatmapOverlayWidgetPlugin, HeatmapOverlayWidgetPlugin)
+Q_EXPORT_PLUGIN2(HeatmapOverlayWidgetCollectionPlugin, HeatmapOverlayWidgetCollectionPlugin)
 #endif
