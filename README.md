@@ -67,26 +67,25 @@ int main(int argc, char *argv[])
 
 ## 示例应用
 - `src/HeatmapDemoMain.cpp`：完整窗口示例，支持传入图片路径作为背景，定时生成随机视线点叠加到热图上，并提供“清空热图”按钮。
-- 运行方式（示例）：
-  ```bash
-  qmake && make  # 或使用 CMake，根据项目环境自行配置
-  ./HeatmapDemoMain /path/to/your/image.jpg
+- 运行方式（Windows，Qt 6.10.0 + MSVC 2022 64bit Release，qmake 示例）：
+  ```bat
+  "C:\Qt\6.10.0\msvc2022_64\bin\qmake.bat" heatmapoverlaywidgetdemo.pro -r -spec win32-msvc
+  nmake
+  release\heatmapoverlaywidgetdemo.exe C:\path\to\your\image.jpg
   ```
   如未提供有效图片路径，程序会自动生成一张灰色背景图以便快速体验热图效果。
 
 ## 作为 Qt 控件库 / Designer 插件使用
-- 插件实现：`src/HeatmapOverlayWidgetPlugin.h/.cpp/.json`，可编译为 `designer` 插件放入 Qt 控件库（已按 Qt 5.15.2 兼容性仅导出集合插件元数据，避免多重元数据导致 Designer 不加载）。
-- qmake 插件示例（将源码与头文件加入 `HEADERS/SOURCES`）：
-  ```pro
-  TEMPLATE = lib
-  CONFIG += designer plugin
-  QT += widgets gui designer
-  TARGET = heatmapoverlaywidgetplugin
-  HEADERS += src/HeatmapOverlayWidget.h \
-             src/HeatmapOverlayWidgetPlugin.h
-  SOURCES += src/HeatmapOverlayWidget.cpp \
-             src/HeatmapOverlayWidgetPlugin.cpp
-  DISTFILES += src/HeatmapOverlayWidget.json
+- 插件实现：`src/HeatmapOverlayWidgetPlugin.h/.cpp/.json`，基于 Qt 6.10.0 的集合插件导出 JSON 元数据，便于 Qt Designer 正确发现控件。
+- Qt/Creator 版本匹配原则：**Qt Designer / Qt Creator 所使用的 Qt 版本必须与插件编译所用的 Qt 版本一致**。当前示例已针对 Qt 6.10.0 + MSVC 2022 64bit Release，Qt Creator 18.0.0 搭配同一 Qt Kit 即可直接加载。
+- qmake 插件工程（Qt 6.10.0）已经随仓库提供：`heatmapoverlaywidgetplugin.pro`。Windows 构建与安装示例：
+  ```bat
+  "C:\Qt\6.10.0\msvc2022_64\bin\qmake.bat" heatmapoverlaywidgetplugin.pro -r -spec win32-msvc
+  nmake
+  nmake install
+  REM 如无安装权限，可将 bin\heatmapoverlaywidget.dll 与 src\HeatmapOverlayWidget.json 手工复制到 C:\Qt\6.10.0\msvc2022_64\plugins\designer
   ```
-- Qt 5.15.2 及更早版本的 Designer 对集合插件识别更稳定，代码内已包含 `HeatmapOverlayWidgetCollectionPlugin` 包装；按上方方式编译即可生成对应动态库。
-- 编译后复制生成的 `libheatmapoverlaywidgetplugin.so`（或对应平台扩展名）到 Qt 的 `plugins/designer/` 目录，重启 Qt Designer 后即可在“Visualization”分组找到并拖拽该控件。
+- 若仍未被 Qt Creator / Designer 识别，请确认：
+  - 插件编译使用的 Qt Kit 与 Qt Creator 当前使用的 Qt 版本一致（Qt Creator 18 默认内置 Qt 6，建议选 Qt 6.10.0 MSVC 2022 64bit Kit）；
+  - 插件 `.dll` 与 `HeatmapOverlayWidget.json` 均已放入对应 Qt 安装目录的 `plugins\designer\`；
+  - 在 Qt Creator 的 **帮助 -> 关于插件** 中能看到 `heatmapoverlaywidget`，如有旧版本请先删除后再复制新的二进制。
