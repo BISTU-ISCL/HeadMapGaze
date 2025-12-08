@@ -32,12 +32,12 @@ private:
     bool m_initialized = false;
 };
 
-// Qt5 下 Designer 更常见的集合插件包装，保证在 5.15 版本中被识别
+// Qt 6 Designer 集合插件包装，确保控件按 JSON 元数据被识别
 class HeatmapOverlayWidgetCollectionPlugin : public QObject, public QDesignerCustomWidgetCollectionInterface
 {
     Q_OBJECT
     Q_INTERFACES(QDesignerCustomWidgetCollectionInterface)
-    // Qt 5.15.2 的 Designer 在加载集合插件时依赖 JSON 元数据，这里显式引用文件
+    // Qt 6 Designer 通过 JSON 元数据发现集合插件，这里显式引用文件
     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QDesignerCustomWidgetCollectionInterface" FILE "HeatmapOverlayWidget.json")
 
 public:

@@ -1,11 +1,11 @@
-# Qt 5.15.2 qmake 工程：构建 Designer 插件（必须使用与 Designer 相同的 Qt 版本）
+# Qt 6.10.0 qmake 工程：构建 Qt Designer 自定义控件插件（MSVC 2022 64bit Release）
 TEMPLATE = lib
-CONFIG += plugin designer c++14
+CONFIG += plugin designer c++17 release
 QT += widgets designer gui
 
-# 插件名称与输出位置（默认放到当前 Qt 套件的 designer 目录）
+# 插件名称与输出位置（先输出到构建目录，install 时再复制到 Qt 安装的 designer 目录）
 TARGET = heatmapoverlaywidget
-DESTDIR = $$[QT_INSTALL_PLUGINS]/designer
+DESTDIR = $$OUT_PWD/bin
 
 # 源文件
 SOURCES += \
@@ -22,8 +22,9 @@ DISTFILES += src/HeatmapOverlayWidget.json
 # 允许相对包含
 INCLUDEPATH += src
 
-# 安装规则，qmake install 时复制到插件目录
+# 安装规则，qmake install 时复制到插件目录（Windows 下为 *.dll，与 JSON 一起复制）
+plugin_file = $$DESTDIR/$$qtLibraryTarget($$TARGET)
 plugins.path = $$[QT_INSTALL_PLUGINS]/designer
-plugins.files += $$DESTDIR/lib$${TARGET}.so
-plugins.extra += $$QMAKE_COPY $$PWD/src/HeatmapOverlayWidget.json $$DESTDIR
+plugins.files += $$plugin_file
+plugins.files += $$PWD/src/HeatmapOverlayWidget.json
 INSTALLS += plugins
